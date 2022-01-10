@@ -1,13 +1,30 @@
-name: 'Wait'
-description: 'Wait a designated number of milliseconds'
+name: 'AWS CodeArtifact Next Version'
+description: 'Fetch the next sequential version from an AWS CodeArtifact package'
+branding:
+  icon: 'cloud'
+  color: 'green'
 inputs:
-  milliseconds:  # id of input
-    description: 'number of milliseconds to wait'
+  domain:
+    description: 'The name of the domain that contains the repository that contains the returned package versions (see AWS SDK)'
     required: true
-    default: '1000'
+  package:
+    description: 'The 12-digit account number of the AWS account that owns the domain (see AWS SDK)'
+    required: true
+  repository:
+    description: 'The name of the repository that contains the package (see AWS SDK)'
+    required: true
+  format:
+    description: 'The format of the returned packages (see AWS SDK)'
+    required: false
+  prefix:
+    description: 'Package version prefix'
+    required: false
+  increment-amount:
+    description: 'Amount to increment the version number by'
+    required: false
 outputs:
-  time: # output will be available to future steps
-    description: 'The current time after waiting'
+  version_number:
+    description: 'The incremented version number'
 runs:
   using: 'node12'
   main: 'dist/index.js'
