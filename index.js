@@ -15,22 +15,33 @@ async function run() {
     // Create required resources
     const ca = new aws.CodeArtifact();
 
-    core.info(`Fetching latest package version for ${repositoryName}:${packageName}`);
-    const listVersionsResp = await ca.listPackageVersions({
+    const listPackageConfig = {
       domain: domainName,
       format,
       package: packageName,
       repository: repositoryName,
-    }).promise();
+      status: "Published",
+      sortBy: "PUBLISHED_TIME",
+    };
+
+    core.info(`Fetching latest package version for ${repositoryName}:${packageName}`);
+
+    let listVersionsResp = await ca.listPackageVersions(listPackageConfig).promise();
+    let nextToken = listVersionsResp.nextToken;
 
     let fetchedVersion;
     if (prefix) {
       // Search for the first (latest) version matching the prefix.
-      for (const version in listVersionsResp.versions) {
-        if (version.version.startsWith(prefix)) {
-          fetchedVersion = version.version;
-          break;
+      while (nextToken && !fetchedVersion) {
+        for (const index in listVersionsResp.versions) {
+          const version = listVersionsResp.versions[index];
+          if (version.version.startsWith(prefix)) {
+            fetchedVersion = version.version;
+            break;
+          }
         }
+
+        listVersionsResp = await ca.listPackageVersions({...listPackageConfig, nextToken}).promise();
       }
 
       // No version was found that matched the prefix.
