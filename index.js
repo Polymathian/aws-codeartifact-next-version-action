@@ -38,7 +38,7 @@ async function run() {
         throw new Error(`Failed to locate version matching prefix ${prefix}`);
       }
     } else {
-      fetchedVersion = listVersionsResp.defaultDisplayVersion.split(".");
+      fetchedVersion = listVersionsResp.defaultDisplayVersion;
     }
 
     let versionParts = fetchedVersion.split(".");
