@@ -48,7 +48,7 @@ async function run() {
 
       // No version was found that matched the prefix.
       if (!fetchedVersion) {
-        if (dieOnMissing) {
+        if (dieOnMissing === "true") {
           throw new Error(`Failed to locate version matching prefix ${prefix}`);
         } else {
           // Otherwise, return minor version 0 (will be incremented to 1).
