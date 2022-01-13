@@ -10,7 +10,7 @@ async function run() {
     const repositoryName = core.getInput("repository", {required: true});
     const format = core.getInput("format", {required: false}) || "npm";
     const prefix = core.getInput("prefix", {required: false});
-    const dieOnMissing = core.getInput("die-on-missing", {required: false}) || true;
+    const dieOnMissing = core.getInput("die-on-missing", {required: false});
     const increment = core.getInput("increment-amount", {required: false}) || 1;
 
     // Create required resources
