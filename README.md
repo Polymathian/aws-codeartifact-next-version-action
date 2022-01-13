@@ -11,4 +11,5 @@ This is a third-party action and not maintained by Amazon.
 * `repository` The name of the repository that contains the package (see AWS SDK.)
 * `format` Optional. The format of the returned packages (see AWS SDK.)
 * `prefix` Optional. Package version prefix.
+* `die-on-missing` Optional. Throw an exception if a package matching the prefix was not found. Otherwise, start a new version.
 * `increment-amount` Optional. Amount to increment the version number by.

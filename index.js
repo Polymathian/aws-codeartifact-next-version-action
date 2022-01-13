@@ -10,6 +10,7 @@ async function run() {
     const repositoryName = core.getInput("repository", {required: true});
     const format = core.getInput("format", {required: false}) || "npm";
     const prefix = core.getInput("prefix", {required: false});
+    const dieOnMissing = core.getInput("die-on-missing", {required: false}) || true;
     const increment = core.getInput("increment-amount", {required: false}) || 1;
 
     // Create required resources
@@ -42,11 +43,18 @@ async function run() {
         }
 
         listVersionsResp = await ca.listPackageVersions({...listPackageConfig, nextToken}).promise();
+        nextToken = listVersionsResp.nextToken;
       }
 
       // No version was found that matched the prefix.
       if (!fetchedVersion) {
-        throw new Error(`Failed to locate version matching prefix ${prefix}`);
+        if (dieOnMissing) {
+          throw new Error(`Failed to locate version matching prefix ${prefix}`);
+        } else {
+          // Otherwise, return minor version 0 (will be incremented to 1).
+          fetchedVersion = prefix.concat(".0");
+          core.info(`${prefix} version not found, creating new version...`);
+        }
       }
     } else {
       fetchedVersion = listVersionsResp.defaultDisplayVersion;
