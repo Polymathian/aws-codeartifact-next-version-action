@@ -7,18 +7,17 @@ const core = require("@actions/core");
 async function findOnCodeartifactByPrefix(domainName, format, packageName, repositoryName, prefix) {
     const ca = new aws.CodeArtifact();
 
-    const listPackageConfig = {
-        domain: domainName,
-        format,
-        package: packageName,
-        repository: repositoryName,
-        status: "Published",
-        sortBy: "PUBLISHED_TIME",
-    };
-
     let nextToken = undefined;
     do {
-        const listVersionsResp = await ca.listPackageVersions(listPackageConfig).promise();
+        const listVersionsResp = await ca.listPackageVersions({
+            domain: domainName,
+            format: format,
+            package: packageName,
+            repository: repositoryName,
+            status: "Published",
+            sortBy: "PUBLISHED_TIME",
+            nextToken: nextToken,
+        }).promise();
         for (const index in listVersionsResp.versions) {
             const version = listVersionsResp.versions[index];
             core.debug(`Saw version ${version.version}`);
