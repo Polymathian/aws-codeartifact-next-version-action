@@ -9,23 +9,32 @@ async function findOnCodeartifactByPrefix(domainName, format, packageName, repos
 
     let nextToken = undefined;
     do {
-        const listVersionsResp = await ca.listPackageVersions({
-            domain: domainName,
-            format: format,
-            package: packageName,
-            repository: repositoryName,
-            status: "Published",
-            sortBy: "PUBLISHED_TIME",
-            nextToken: nextToken,
-        }).promise();
-        for (const index in listVersionsResp.versions) {
-            const version = listVersionsResp.versions[index];
-            core.debug(`Saw version ${version.version}`);
-            if (version.version.startsWith(prefix + ".")) {
+        try {
+            const listVersionsResp = await ca
+              .listPackageVersions({
+                domain: domainName,
+                format: format,
+                package: packageName,
+                repository: repositoryName,
+                status: "Published",
+                sortBy: "PUBLISHED_TIME",
+                nextToken: nextToken,
+              })
+              .promise();
+            for (const index in listVersionsResp.versions) {
+              const version = listVersionsResp.versions[index];
+              core.debug(`Saw version ${version.version}`);
+              if (version.version.startsWith(prefix + ".")) {
                 return version.version;
+              }
+            }
+            nextToken = listVersionsResp.nextToken;
+        } catch (e) {
+            // Temporary solution to catch if the package does not yet exist on code artifact.
+            if (e.code === "ResourceNotFoundException") {
+                return null
             }
         }
-        nextToken = listVersionsResp.nextToken;
     } while (nextToken !== undefined);
     return null;
 }
