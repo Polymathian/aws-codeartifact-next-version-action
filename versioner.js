@@ -33,6 +33,8 @@ async function findOnCodeartifactByPrefix(domainName, format, packageName, repos
             // Temporary solution to catch if the package does not yet exist on code artifact.
             if (e.code === "ResourceNotFoundException") {
                 return null
+            } else {
+                throw e
             }
         }
     } while (nextToken !== undefined);
