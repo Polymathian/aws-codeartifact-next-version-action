@@ -30,8 +30,11 @@ async function findOnCodeartifactByPrefix(domainName, format, packageName, repos
             }
             nextToken = listVersionsResp.nextToken;
         } catch (e) {
-            // Temporary solution to catch if the package does not yet exist on code artifact.
             if (e.code === "ResourceNotFoundException") {
+                /**
+                 * In the case the package cannot be found on code artifact, we return a null.
+                 * This may happen because the package is not yet created in code artifact.
+                 */
                 return null
             } else {
                 throw e
