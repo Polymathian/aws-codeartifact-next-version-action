@@ -29,5 +29,5 @@ outputs:
   version_number:
     description: 'The incremented version number'
 runs:
-  using: 'node12'
+  using: 'node20'
   main: 'dist/index.js'

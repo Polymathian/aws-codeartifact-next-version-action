@@ -31,6 +31,20 @@ function mockListPackageVersionsReturn(versions, defaultDisplayVersion) {
     });
 }
 
+/**
+ * Mock listPackageVersions failing with ResourceNotFoundException
+ */
+const mockListPackageVersionsError = () => {
+    AWS.remock("CodeArtifact", "listPackageVersions", (params, callback) => {
+        callback({
+          message: "ResourceNotFoundException",
+          name: "ResourceNotFoundException",
+          code: "ResourceNotFoundException",
+          time: new Date(),
+        });
+    })
+}
+
 describe("incrementVersionString", () => {
     test.each([
         {version: "1", increment: 1, expected: "2"},
@@ -92,3 +106,19 @@ describe('computeVersion prefix', () => {
         await expect(res).rejects.toThrow();
     });
 });
+
+describe("package not exists in CA", () => {
+    test("returns correct version if package not exists.", async () => {
+        mockListPackageVersionsError();
+        const res = await computeVersion(
+          "domain",
+          "package",
+          "repository",
+          "format",
+          "4.5",
+          false,
+          1
+        );
+        expect(res).toBe("4.5.1")
+    })
+})
